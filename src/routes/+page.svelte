@@ -1,2 +1,49 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<h1>Mapa mapa mapa</h1>
+<p>alguma coisa mapa</p>
+
+<div id="map" />
+
+<style>
+    @import url("$lib/global.css");
+</style>
+
+<script>
+    import mapboxgl from "mapbox-gl";
+    import "../../node_modules/mapbox-gl/dist/mapbox-gl.css";
+    
+    mapboxgl.accessToken = "pk.eyJ1IjoiZmFsY2FvYW5kZXJzb24iLCJhIjoiY21hcGhlMGl0MGo0MjJqb25hN2dzMjJxeSJ9.5IfozuoL3_WePp7audzpkw";
+
+    import { onMount } from "svelte";
+
+    async function initMap() {
+        map = new mapboxgl.Map({
+            container: 'map',
+            center: [-71.09415, 42.36027],
+            zoom: 12,
+            style: "mapbox://styles/mapbox/streets-v12",
+        });
+        
+        await new Promise(resolve => map.on("load", resolve));
+
+        map.addSource("boston_route", {
+            type: "geojson",
+            data: "https://bostonopendata-boston.opendata.arcgis.com/datasets/boston::existing-bike-network-2022.geojson?outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D",
+        });
+        
+        map.addLayer({
+            id: "boston_route_layer", 
+            type: "line",
+            source: "boston_route", // The id we specified in `addSource()`
+            paint: {
+                // paint params, e.g. colors, thickness, etc.
+                "line-color": "#888",
+                "line-width": 8,
+                "line-opacity": 0.8
+            },
+        });
+    }
+
+    onMount(() => {
+        initMap();
+    });    
+</script>
